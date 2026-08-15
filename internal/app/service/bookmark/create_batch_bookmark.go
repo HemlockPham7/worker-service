@@ -2,12 +2,22 @@ package bookmark
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/HemlockPham7/worker-service/internal/app/model"
 	"github.com/HemlockPham7/worker-service/internal/app/service/queue"
 )
 
+const (
+	getBookmarksCacheGroupKeyFormat = "get_bookmarks_%s"
+)
+
 func (s *bookmarkService) CreateBatchBookmarks(ctx context.Context, userId string, bookmarkList []*queue.ImportBookmarkInput) error {
+	err := s.cacheRepository.DeleteCache(ctx, fmt.Sprintf(getBookmarksCacheGroupKeyFormat, userId))
+	if err != nil {
+		return err
+	}
+
 	bookmarks := make([]*model.Bookmark, len(bookmarkList))
 
 	for i, input := range bookmarkList {
@@ -24,7 +34,7 @@ func (s *bookmarkService) CreateBatchBookmarks(ctx context.Context, userId strin
 		}
 	}
 
-	err := s.bookmarkRepository.CreateBatchBookmarks(ctx, bookmarks)
+	err = s.bookmarkRepository.CreateBatchBookmarks(ctx, bookmarks)
 	if err != nil {
 		return err
 	}

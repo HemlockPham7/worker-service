@@ -5,6 +5,7 @@ import (
 
 	"github.com/HemlockPham7/common-libs/pkg/utils"
 	"github.com/HemlockPham7/worker-service/internal/app/repository/bookmark"
+	"github.com/HemlockPham7/worker-service/internal/app/repository/cache"
 	"github.com/HemlockPham7/worker-service/internal/app/service/queue"
 )
 
@@ -17,12 +18,14 @@ type Service interface {
 
 type bookmarkService struct {
 	bookmarkRepository bookmark.Repository
-	codeGenerator utils.GenCode
+	cacheRepository    cache.DB
+	codeGenerator      utils.GenCode
 }
 
-func NewService(bookmarkRepository bookmark.Repository, codeGenerator utils.GenCode) Service {
+func NewService(bookmarkRepository bookmark.Repository, cacheRepository cache.DB, codeGenerator utils.GenCode) Service {
 	return &bookmarkService{
 		bookmarkRepository: bookmarkRepository,
-		codeGenerator: codeGenerator,
+		cacheRepository:    cacheRepository,
+		codeGenerator:      codeGenerator,
 	}
 }
