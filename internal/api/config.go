@@ -9,6 +9,7 @@ type Config struct {
 	LogLevel    string `default:"info" envconfig:"LOG_LEVEL"`
 	ServiceName string `default:"worker-service" envconfig:"SERVICE_NAME"`
 	InstanceID  string `default:"" envconfig:"INSTANCE_ID"`
+	QueueName   string `default:"bookmark-import" envconfig:"QUEUE_NAME"`
 }
 
 func NewConfig() (*Config, error) {
