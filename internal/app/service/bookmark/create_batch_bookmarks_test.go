@@ -26,13 +26,13 @@ func TestBookmarkService_CreateBatchBookmarks(t *testing.T) {
 		expectedError error
 	}{
 		{
-			name: "success",
-
-			setupMockCacheRepo: func(ctx context.Context) *mock_cache.DB {
-				mockCache := mock_cache.NewDB(t)
-				mockCache.On("DeleteCache", ctx, fmt.Sprintf(getBookmarksCacheGroupKeyFormat, setupInputUserID())).Return(nil)
-				return mockCache
+			setupMockBookmarkRepo: func(ctx context.Context) *mock_bookmark.Repository {
+				mockBookmark := mock_bookmark.NewRepository(t)
+				mockBookmark.On("CreateBatchBookmarks", ctx, setupMockModelBookmark()).Return(nil)
+				return mockBookmark
 			},
+
+			name: "success",
 
 			setupMockCodeGenerator: func(ctx context.Context) *mocks.GenCode {
 				mockCodeGenerator := mocks.NewGenCode(t)
@@ -40,13 +40,13 @@ func TestBookmarkService_CreateBatchBookmarks(t *testing.T) {
 				return mockCodeGenerator
 			},
 
-			setupMockBookmarkRepo: func(ctx context.Context) *mock_bookmark.Repository {
-				mockBookmark := mock_bookmark.NewRepository(t)
-				mockBookmark.On("CreateBatchBookmarks", ctx, setupMockModelBookmark()).Return(nil)
-				return mockBookmark
-			},
-
 			expectedError: nil,
+
+			setupMockCacheRepo: func(ctx context.Context) *mock_cache.DB {
+				mockCache := mock_cache.NewDB(t)
+				mockCache.On("DeleteCache", ctx, fmt.Sprintf(getBookmarksCacheGroupKeyFormat, setupInputUserID())).Return(nil)
+				return mockCache
+			},
 		},
 		{
 			name: "delete cache fail",
@@ -76,20 +76,19 @@ func TestBookmarkService_CreateBatchBookmarks(t *testing.T) {
 				return mockCache
 			},
 
-			setupMockCodeGenerator: func(ctx context.Context) *mocks.GenCode {
-				mockCodeGenerator := mocks.NewGenCode(t)
-				mockCodeGenerator.On("GenerateCode", codeLength).Return("", assert.AnError)
-				return mockCodeGenerator
-			},
-
 			setupMockBookmarkRepo: func(ctx context.Context) *mock_bookmark.Repository {
 				return mock_bookmark.NewRepository(t)
 			},
 
 			expectedError: assert.AnError,
+
+			setupMockCodeGenerator: func(ctx context.Context) *mocks.GenCode {
+				mockCodeGenerator := mocks.NewGenCode(t)
+				mockCodeGenerator.On("GenerateCode", codeLength).Return("", assert.AnError)
+				return mockCodeGenerator
+			},
 		},
 		{
-			name: "failed to create batch bookmarks",
 
 			setupMockCacheRepo: func(ctx context.Context) *mock_cache.DB {
 				mockCache := mock_cache.NewDB(t)
@@ -97,19 +96,21 @@ func TestBookmarkService_CreateBatchBookmarks(t *testing.T) {
 				return mockCache
 			},
 
+			expectedError: assert.AnError,
+
 			setupMockCodeGenerator: func(ctx context.Context) *mocks.GenCode {
 				mockCodeGenerator := mocks.NewGenCode(t)
 				mockCodeGenerator.On("GenerateCode", codeLength).Return("example1", nil)
 				return mockCodeGenerator
 			},
 
+			name: "failed to create batch bookmarks",
+
 			setupMockBookmarkRepo: func(ctx context.Context) *mock_bookmark.Repository {
 				mockBookmark := mock_bookmark.NewRepository(t)
 				mockBookmark.On("CreateBatchBookmarks", ctx, setupMockModelBookmark()).Return(assert.AnError)
 				return mockBookmark
 			},
-
-			expectedError: assert.AnError,
 		},
 	}
 
