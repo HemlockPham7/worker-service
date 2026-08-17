@@ -18,5 +18,8 @@ func (h *handler) Handle(ctx context.Context, message []byte) error {
 	}
 
 	err = h.bookmarkService.CreateBatchBookmarks(ctx, input.UID, input.Bookmarks)
+	if err != nil {
+		return err
+	}
 	return nil
 }

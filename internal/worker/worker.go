@@ -65,8 +65,8 @@ func (p *pool) Consume(message []byte) {
 
 func (p *pool) Close() {
 	close(p.messages)
-	close(p.errChan)
 	p.wg.Wait()
+	close(p.errChan)
 	log.Info().Msg("worker pool closed")
 }
 

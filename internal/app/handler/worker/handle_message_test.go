@@ -46,7 +46,7 @@ func TestHandler_Handle(t *testing.T) {
 
 			inputMessage: setupInputMessage(),
 
-			expected: nil,
+			expected: assert.AnError,
 		},
 	}
 
