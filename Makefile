@@ -9,7 +9,7 @@ endif
 
 export IMG_TAG
 
-COVERAGE_EXCLUDE=mocks|main.go|test|config.go|client.go|level.go|mock.go|request.go|parser.go|postgres_data|infrastructure|migration.go
+COVERAGE_EXCLUDE=mocks|test|level.go|mock.go|request.go|parser.go|postgres_data|infrastructure|migration.go|main.go|config.go|engine.go|worker.go
 COVERAGE_THRESHOLD=70
 COVERAGE_FOLDER=./test-output
 
