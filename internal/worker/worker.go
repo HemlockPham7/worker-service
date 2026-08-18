@@ -49,7 +49,7 @@ func (p *pool) init(ctx context.Context) {
 
 	go func() {
 		for w := range p.errChan {
-			log.Error().Msgf("Worker %d exited with error %w", w.id, w.err)
+			log.Error().Msgf("Worker %d exited with error %v", w.id, w.err)
 
 			time.Sleep(1 * time.Second)
 			log.Info().Msgf("Restarting worker %d ...", w.id)
@@ -65,8 +65,8 @@ func (p *pool) Consume(message []byte) {
 
 func (p *pool) Close() {
 	close(p.messages)
-	close(p.errChan)
 	p.wg.Wait()
+	close(p.errChan)
 	log.Info().Msg("worker pool closed")
 }
 
