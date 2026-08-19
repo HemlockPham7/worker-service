@@ -1,0 +1,41 @@
+version: '3.7'
+
+services:
+  redis:
+    image: redis:alpine
+    container_name: redis-worker-service
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres:17
+    container_name: postgres-worker-service
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data:Z
+
+  bookmark-service:
+    image: hemlockpham/bookmark-service:latest
+    restart: always
+    container_name: bookmark-service
+    depends_on:
+      - redis
+      - postgres
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./bookmark-service/.env
+    volumes:
+      - ./public.pem:/app/public.pem
+      - ./private.pem:/app/private.pem
+
+  worker-service:
+    build: .
+    container_name: worker-service
+    depends_on:
+      - bookmark-service
+    env_file:
+      - .env
