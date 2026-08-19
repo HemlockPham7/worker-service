@@ -42,9 +42,13 @@ generate-rsa-key:
 
 
 run:
-	go run cmd/api/main.go
+	go run cmd/worker/main.go
 
-swagger:
-	swag init -g cmd/api/main.go --output docs
+deploy:
+	docker-compose up -d
 
-dev-run: swagger run
+remove-database:
+	docker compose down -v
+	sudo rm -rf ./postgres_data
+
+full-deploy: generate-rsa-key deploy

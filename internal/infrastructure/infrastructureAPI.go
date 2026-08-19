@@ -26,9 +26,9 @@ func CreateEngine() {
 
 	logger.SetLogLevel(cfg.LogLevel)
 
-	redisClient := CreateRedisClient("")
+	redisClient := CreateRedisClient("worker")
 
-	dbClient := CreateDB("")
+	dbClient := CreateDB("worker")
 
 	queueRepository := queueRepo.NewRedisQueue(redisClient, cfg.QueueName)
 	cacheRepository := cacheRepo.NewRedisDB(redisClient)
