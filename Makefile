@@ -48,3 +48,12 @@ swagger:
 	swag init -g cmd/api/main.go --output docs
 
 dev-run: swagger run
+
+deploy:
+	docker-compose up -d
+
+remove-database:
+	docker compose down -v
+	sudo rm -rf ./postgres_data
+
+full-deploy: generate-rsa-key deploy
