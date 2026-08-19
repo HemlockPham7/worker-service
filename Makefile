@@ -42,12 +42,7 @@ generate-rsa-key:
 
 
 run:
-	go run cmd/api/main.go
-
-swagger:
-	swag init -g cmd/api/main.go --output docs
-
-dev-run: swagger run
+	go run cmd/worker/main.go
 
 deploy:
 	docker-compose up -d
