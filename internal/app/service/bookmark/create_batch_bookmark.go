@@ -6,6 +6,7 @@ import (
 
 	"github.com/HemlockPham7/worker-service/internal/app/model"
 	"github.com/HemlockPham7/worker-service/internal/app/service/queue"
+	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
 const (
@@ -13,6 +14,10 @@ const (
 )
 
 func (s *bookmarkService) CreateBatchBookmarks(ctx context.Context, userId string, bookmarkList []*queue.ImportBookmarkInput) error {
+	txn := newrelic.FromContext(ctx)
+	span := txn.StartSegment("CreateBatchBookmarks_BookmarkService")
+	defer span.End()
+
 	err := s.cacheRepository.DeleteCache(ctx, fmt.Sprintf(getBookmarksCacheGroupKeyFormat, userId))
 	if err != nil {
 		return err

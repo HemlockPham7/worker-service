@@ -3,7 +3,7 @@ module github.com/HemlockPham7/worker-service
 go 1.26.4
 
 require (
-	github.com/HemlockPham7/common-libs v0.0.1
+	github.com/HemlockPham7/common-libs v0.0.5
 	github.com/google/uuid v1.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/redis/go-redis/v9 v9.22.0
@@ -28,6 +28,7 @@ require (
 	github.com/mattn/go-colorable v0.1.15 // indirect
 	github.com/mattn/go-isatty v0.0.24 // indirect
 	github.com/mattn/go-sqlite3 v1.14.22 // indirect
+	github.com/newrelic/go-agent/v3 v3.44.2 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rogpeppe/go-internal v1.16.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect

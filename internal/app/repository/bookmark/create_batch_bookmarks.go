@@ -5,10 +5,15 @@ import (
 
 	"github.com/HemlockPham7/common-libs/pkg/dbutils"
 	"github.com/HemlockPham7/worker-service/internal/app/model"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"gorm.io/gorm"
 )
 
 func (r *bookmarkRepository) CreateBatchBookmarks(ctx context.Context, bookmarks []*model.Bookmark) error {
+	txn := newrelic.FromContext(ctx)
+	span := txn.StartSegment("CreateBatchBookmarks_BookmarkRepository")
+	defer span.End()
+
 	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		for _, bookmark := range bookmarks {
 			if err := tx.Create(bookmark).Error; err != nil {

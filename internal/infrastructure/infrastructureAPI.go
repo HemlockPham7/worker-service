@@ -30,6 +30,8 @@ func CreateEngine() {
 
 	dbClient := CreateDB("worker")
 
+	nrClient := CreateNRClient("worker")
+
 	queueRepository := queueRepo.NewRedisQueue(redisClient, cfg.QueueName)
 	cacheRepository := cacheRepo.NewRedisDB(redisClient)
 	codeGenerator := utils.NewGenCode()
@@ -39,6 +41,6 @@ func CreateEngine() {
 
 	bookmarkHandler := bookmarkHdl.NewHandler(bookmarkService)
 
-	workerEngine := worker.NewEngine(queueRepository, bookmarkHandler)
+	workerEngine := worker.NewEngine(queueRepository, bookmarkHandler, nrClient)
 	workerEngine.Start(context.Background())
 }
