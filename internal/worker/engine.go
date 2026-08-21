@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/HemlockPham7/worker-service/internal/app/repository/queue"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/rs/zerolog/log"
 )
 
@@ -21,18 +22,20 @@ type Handler interface {
 }
 
 type engine struct {
-	queue   queue.Repository
-	handler Handler
-	run     bool
-	sigChan chan os.Signal
+	queue    queue.Repository
+	handler  Handler
+	run      bool
+	sigChan  chan os.Signal
+	nrClient *newrelic.Application
 }
 
-func NewEngine(queue queue.Repository, handler Handler) Engine {
+func NewEngine(queue queue.Repository, handler Handler, nrClient *newrelic.Application) Engine {
 	return &engine{
-		queue:   queue,
-		handler: handler,
-		run:     false,
-		sigChan: make(chan os.Signal, 1),
+		queue:    queue,
+		handler:  handler,
+		run:      false,
+		sigChan:  make(chan os.Signal, 1),
+		nrClient: nrClient,
 	}
 }
 
@@ -44,7 +47,7 @@ const (
 func (e *engine) Start(ctx context.Context) {
 	log.Info().Msg("Starting worker engine")
 
-	workerPool := newPool(ctx, e.handler, numberOfWorker)
+	workerPool := newPool(ctx, e.handler, numberOfWorker, e.nrClient)
 	signal.Notify(e.sigChan, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 
 	e.run = true

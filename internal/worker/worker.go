@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/rs/zerolog/log"
 )
 
@@ -15,9 +16,10 @@ type pool struct { // quan li so luong worker trong mot pool
 	messages     chan []byte
 	errChan      chan *worker
 	wg           *sync.WaitGroup
+	nrClient     *newrelic.Application
 }
 
-func newPool(ctx context.Context, handler Handler, numberWorker int) *pool {
+func newPool(ctx context.Context, handler Handler, numberWorker int, nrClient *newrelic.Application) *pool {
 	messageChan := make(chan []byte, numberWorker)
 	errorChan := make(chan *worker, numberWorker)
 
@@ -27,6 +29,7 @@ func newPool(ctx context.Context, handler Handler, numberWorker int) *pool {
 		messages:     messageChan,
 		errChan:      errorChan,
 		wg:           &sync.WaitGroup{},
+		nrClient:     nrClient,
 	}
 
 	initPool.init(ctx)
@@ -41,6 +44,7 @@ func (p *pool) init(ctx context.Context) {
 			messages: p.messages,
 			errChan:  p.errChan,
 			wg:       p.wg,
+			nrClient: p.nrClient,
 		}
 		log.Info().Msgf("Starting worker %d", w.id)
 		p.wg.Add(1)
@@ -77,6 +81,7 @@ type worker struct {
 	err      error
 	errChan  chan *worker
 	wg       *sync.WaitGroup
+	nrClient *newrelic.Application
 }
 
 func (w *worker) run(ctx context.Context) {
@@ -99,12 +104,19 @@ func (w *worker) run(ctx context.Context) {
 			log.Info().Msgf("Worker %d is closing", w.id)
 			return
 		}
+
+		// start a new relic transaction for each message
+		txn := w.nrClient.StartTransaction("worker/handle-bookmark-import")
+		txnCtx := newrelic.NewContext(ctx, txn)
+
 		log.Debug().Msgf("Worker %d is processing message: %s", w.id, string(msg))
-		err := w.handler.Handle(ctx, msg)
+		err := w.handler.Handle(txnCtx, msg)
 		if err != nil {
 			log.Error().Err(err).Msgf("Worker %d failed to process message", w.id)
 		} else {
 			log.Info().Msgf("Worker %d processed successfully message: %s", w.id, string(msg))
 		}
+
+		txn.End()
 	}
 }
