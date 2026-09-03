@@ -3,7 +3,7 @@ module github.com/HemlockPham7/worker-service
 go 1.26.4
 
 require (
-	github.com/HemlockPham7/common-libs v0.0.5
+	github.com/HemlockPham7/common-libs v0.0.6
 	github.com/google/uuid v1.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/newrelic/go-agent/v3 v3.44.2
