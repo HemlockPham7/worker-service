@@ -39,7 +39,7 @@ jobs:
           curl -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.DEPLOYMENT_TOKEN }}" \
+            -H "Authorization: Bearer $DEPLOYMENT_TOKEN" \
             https://api.github.com/repos/HemlockPham7/shorten-url-deployment/dispatches \
             -d '{
               "event_type": "deploy",
@@ -47,3 +47,5 @@ jobs:
                 "service": "worker-service"
               }
             }'
+        env:
+          DEPLOYMENT_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
