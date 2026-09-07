@@ -12,6 +12,11 @@ type Config struct {
 	QueueName   string `default:"bookmark-import" envconfig:"QUEUE_NAME"`
 }
 
+// NewConfig loads the worker configuration from environment variables.
+//
+// Returns:
+//   - The configured worker configuration.
+//   - An error if the configuration cannot be loaded.
 func NewConfig() (*Config, error) {
 	cfg := &Config{}
 	err := envconfig.Process("api", cfg)

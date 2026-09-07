@@ -13,6 +13,15 @@ const (
 	getBookmarksCacheGroupKeyFormat = "get_bookmarks_%s"
 )
 
+// CreateBatchBookmarks creates multiple bookmarks for the specified user.
+//
+// Parameters:
+//   - ctx: the context used to control the lifetime of the operation.
+//   - userID: the ID of the user who owns the bookmarks.
+//   - bookmarkList: the bookmark data to create.
+//
+// Returns:
+//   - An error if the bookmark cache cannot be invalidated, a bookmark code cannot be generated, or the bookmarks cannot be created.
 func (s *bookmarkService) CreateBatchBookmarks(ctx context.Context, userId string, bookmarkList []*queue.ImportBookmarkInput) error {
 	txn := newrelic.FromContext(ctx)
 	span := txn.StartSegment("CreateBatchBookmarks_BookmarkService")

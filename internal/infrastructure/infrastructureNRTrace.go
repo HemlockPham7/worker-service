@@ -6,6 +6,16 @@ import (
 	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
+// CreateNRClient creates a New Relic application client.
+//
+// Parameters:
+//   - envPrefix: the environment variable prefix used to load New Relic configuration.
+//
+// Returns:
+//   - A configured New Relic application client.
+//
+// Panics:
+//   - If the New Relic client cannot be created.
 func CreateNRClient(envPrefix string) *newrelic.Application {
 	nrClient, err := nrtrace.NewClient(envPrefix)
 	common.HandleError(err)
