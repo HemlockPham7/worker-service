@@ -15,12 +15,20 @@ import (
 	"github.com/HemlockPham7/worker-service/internal/worker"
 )
 
+// CreateAPIConfig creates the API configuration from environment variables.
+//
+// Returns:
+//   - A configured API configuration.
+//
+// Panics:
+//   - If the API configuration cannot be loaded.
 func CreateAPIConfig() *api.Config {
 	cfg, err := api.NewConfig()
 	common.HandleError(err)
 	return cfg
 }
 
+// CreateEngine initializes the worker dependencies and starts the worker engine.
 func CreateEngine() {
 	cfg := CreateAPIConfig()
 

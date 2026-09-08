@@ -9,6 +9,15 @@ import (
 	"gorm.io/gorm"
 )
 
+// CreateBatchBookmarks creates multiple bookmarks in a single database transaction.
+//
+// Parameters:
+//   - ctx: the context used to control the lifetime of the database operation.
+//   - bookmarks: the bookmarks to create.
+//
+// Returns:
+//   - An error if any bookmark cannot be created.
+//   - A database error converted by dbutils.CatchDBError if the transaction fails.
 func (r *bookmarkRepository) CreateBatchBookmarks(ctx context.Context, bookmarks []*model.Bookmark) error {
 	txn := newrelic.FromContext(ctx)
 	span := txn.StartSegment("CreateBatchBookmarks_BookmarkRepository")

@@ -10,6 +10,15 @@ import (
 
 var NoMessageError = errors.New("no message")
 
+// PopMessage retrieves and removes the next message from the Redis queue.
+//
+// Parameters:
+//   - ctx: the context used to control the lifetime of the operation.
+//
+// Returns:
+//   - The message payload retrieved from the queue.
+//   - NoMessageError if the queue is empty.
+//   - An error if the message cannot be retrieved from Redis.
 func (r *redisQueue) PopMessage(ctx context.Context) ([]byte, error) {
 	txn := newrelic.FromContext(ctx)
 	span := txn.StartSegment("PopMessage_QueueRepository")

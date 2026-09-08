@@ -10,6 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// pool manages a group of workers that process messages concurrently.
 type pool struct { // quan li so luong worker trong mot pool
 	handler      Handler
 	numberWorker int
@@ -19,6 +20,16 @@ type pool struct { // quan li so luong worker trong mot pool
 	nrClient     *newrelic.Application
 }
 
+// newPool creates and initializes a new worker pool.
+//
+// Parameters:
+//   - ctx: the context passed to each worker.
+//   - handler: the handler used by workers to process messages.
+//   - numberWorker: the number of workers to create in the pool.
+//   - nrClient: the New Relic application used to monitor worker operations.
+//
+// Returns:
+//   - An initialized worker pool.
 func newPool(ctx context.Context, handler Handler, numberWorker int, nrClient *newrelic.Application) *pool {
 	messageChan := make(chan []byte, numberWorker)
 	errorChan := make(chan *worker, numberWorker)
@@ -36,6 +47,10 @@ func newPool(ctx context.Context, handler Handler, numberWorker int, nrClient *n
 	return initPool
 }
 
+// init starts all workers in the pool and monitors workers for unexpected errors.
+//
+// Parameters:
+//   - ctx: the context passed to each worker.
 func (p *pool) init(ctx context.Context) {
 	for i := 0; i < p.numberWorker; i++ {
 		w := &worker{
@@ -63,10 +78,15 @@ func (p *pool) init(ctx context.Context) {
 	}()
 }
 
+// Consume submits a message to the worker pool for processing.
+//
+// Parameters:
+//   - message: the message payload to be processed by an available worker.
 func (p *pool) Consume(message []byte) {
 	p.messages <- message
 }
 
+// Close shuts down the worker pool and waits for all workers to exit.
 func (p *pool) Close() {
 	close(p.messages)
 	p.wg.Wait()
@@ -74,6 +94,7 @@ func (p *pool) Close() {
 	log.Info().Msg("worker pool closed")
 }
 
+// worker processes messages from the worker pool.
 type worker struct {
 	id       int
 	handler  Handler
@@ -84,6 +105,14 @@ type worker struct {
 	nrClient *newrelic.Application
 }
 
+// run continuously processes messages from the worker pool.
+//
+// Each message is processed within a separate New Relic transaction.
+// If the worker panics, the panic is captured and the worker is reported
+// through the error channel so that the pool can restart it.
+//
+// Parameters:
+//   - ctx: the context used to control the lifetime of worker operations.
 func (w *worker) run(ctx context.Context) {
 	defer func() {
 		if r := recover(); r != nil {

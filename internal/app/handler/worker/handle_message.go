@@ -11,6 +11,15 @@ import (
 
 var ErrUnmarshalMessage = errors.New("failed to unmarshal message")
 
+// Handle processes an import bookmark message and creates the bookmarks in the database.
+//
+// Parameters:
+//   - ctx: the context used to control the lifetime of the operation.
+//   - message: the serialized import bookmark message.
+//
+// Returns:
+//   - ErrUnmarshalMessage if the message cannot be decoded.
+//   - An error if the bookmarks cannot be created.
 func (h *handler) Handle(ctx context.Context, message []byte) error {
 	txn := newrelic.FromContext(ctx)
 	span := txn.StartSegment("Handle_WorkerHandler")
